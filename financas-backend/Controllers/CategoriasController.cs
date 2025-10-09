@@ -1,13 +1,10 @@
-﻿using financas_backend.Data;
-using financas_backend.DTOs;
-using financas_backend.Models;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
+using financas_backend.Data;
+using financas_backend.DTOs;
+using financas_backend.Models;
 
 namespace financas_backend.Controllers
 {
@@ -89,16 +86,16 @@ namespace financas_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CategoriaResponseDTO>> CreateCategoria(CategoriaCreateDTO categoriaDto)
+        public async Task<ActionResult<CategoriaResponseDTO>> CreateCategoria([FromBody] CategoriaCreateDTO dto)
         {
             var usuarioId = GetUsuarioId();
 
             var categoria = new Categoria
             {
-                Nome = categoriaDto.Nome,
-                Tipo = categoriaDto.Tipo,
-                Cor = categoriaDto.Cor,
-                Icone = categoriaDto.Icone,
+                Nome = dto.Nome,
+                Tipo = dto.Tipo,
+                Cor = dto.Cor,
+                Icone = dto.Icone,
                 UsuarioId = usuarioId
             };
 
@@ -120,7 +117,7 @@ namespace financas_backend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategoria(int id, CategoriaUpdateDTO categoriaDto)
+        public async Task<IActionResult> UpdateCategoria(int id, [FromBody] CategoriaUpdateDTO dto)
         {
             var usuarioId = GetUsuarioId();
 
@@ -132,10 +129,10 @@ namespace financas_backend.Controllers
                 return NotFound(new { message = "Categoria não encontrada" });
             }
 
-            categoria.Nome = categoriaDto.Nome;
-            categoria.Cor = categoriaDto.Cor;
-            categoria.Icone = categoriaDto.Icone;
-            categoria.Ativo = categoriaDto.Ativo;
+            categoria.Nome = dto.Nome;
+            categoria.Cor = dto.Cor;
+            categoria.Icone = dto.Icone;
+            categoria.Ativo = dto.Ativo;
 
             await _context.SaveChangesAsync();
 
