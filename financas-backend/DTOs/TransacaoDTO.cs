@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using financas_backend.Models;
 
 namespace financas_backend.DTOs
@@ -14,6 +15,7 @@ namespace financas_backend.DTOs
         public decimal Valor { get; set; }
 
         [Required(ErrorMessage = "Tipo é obrigatório")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public TipoTransacao Tipo { get; set; }
 
         [Required(ErrorMessage = "Data é obrigatória")]
@@ -23,7 +25,10 @@ namespace financas_backend.DTOs
         public int CategoriaId { get; set; }
 
         public string? Observacoes { get; set; }
+
         public bool Recorrente { get; set; } = false;
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public TipoRecorrencia? TipoRecorrencia { get; set; }
     }
 
@@ -38,6 +43,7 @@ namespace financas_backend.DTOs
         public decimal Valor { get; set; }
 
         [Required(ErrorMessage = "Tipo é obrigatório")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public TipoTransacao Tipo { get; set; }
 
         [Required(ErrorMessage = "Data é obrigatória")]
@@ -47,7 +53,10 @@ namespace financas_backend.DTOs
         public int CategoriaId { get; set; }
 
         public string? Observacoes { get; set; }
+
         public bool Recorrente { get; set; } = false;
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public TipoRecorrencia? TipoRecorrencia { get; set; }
     }
 
@@ -56,6 +65,7 @@ namespace financas_backend.DTOs
         public int Id { get; set; }
         public string Descricao { get; set; } = string.Empty;
         public decimal Valor { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public TipoTransacao Tipo { get; set; }
         public DateTime Data { get; set; }
         public int CategoriaId { get; set; }
@@ -64,6 +74,7 @@ namespace financas_backend.DTOs
         public string CategoriaIcone { get; set; } = string.Empty;
         public string? Observacoes { get; set; }
         public bool Recorrente { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public TipoRecorrencia? TipoRecorrencia { get; set; }
         public DateTime DataCriacao { get; set; }
         public DateTime DataAtualizacao { get; set; }

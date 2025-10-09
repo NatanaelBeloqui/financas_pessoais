@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\natanael.barros\\OneDrive - Tunesoft Tecnologia Ltda\\Documentos\\Natanael\\cod_seg\\financas_pessoais\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\natanael.barros\\OneDrive - Tunesoft Tecnologia Ltda\\Documentos\\Natanael\\cod_seg\\financas_pessoais\\financas-backend\\financas-backend.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:financas-backend\\financas-backend.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\natanael.barros\\OneDrive - Tunesoft Tecnologia Ltda\\Documentos\\Natanael\\cod_seg\\financas_pessoais\\financas-backend\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:financas-backend\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
@@ -19,14 +23,27 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "financas-backend.csproj",
+              "DocumentMoniker": "C:\\Users\\natanael.barros\\OneDrive - Tunesoft Tecnologia Ltda\\Documentos\\Natanael\\cod_seg\\financas_pessoais\\financas-backend\\financas-backend.csproj",
+              "RelativeDocumentMoniker": "financas-backend\\financas-backend.csproj",
+              "ToolTip": "C:\\Users\\natanael.barros\\OneDrive - Tunesoft Tecnologia Ltda\\Documentos\\Natanael\\cod_seg\\financas_pessoais\\financas-backend\\financas-backend.csproj",
+              "RelativeToolTip": "financas-backend\\financas-backend.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAABWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-10-08T23:56:19.587Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\natanael.barros\\OneDrive - Tunesoft Tecnologia Ltda\\Documentos\\Natanael\\cod_seg\\financas_pessoais\\financas-backend\\Program.cs",
               "RelativeDocumentMoniker": "financas-backend\\Program.cs",
               "ToolTip": "C:\\Users\\natanael.barros\\OneDrive - Tunesoft Tecnologia Ltda\\Documentos\\Natanael\\cod_seg\\financas_pessoais\\financas-backend\\Program.cs",
               "RelativeToolTip": "financas-backend\\Program.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-08T22:23:10.276Z",
+              "WhenOpened": "2025-10-08T23:07:02.002Z",
               "EditorCaption": ""
             }
           ]

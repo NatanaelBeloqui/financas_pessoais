@@ -1,13 +1,10 @@
-﻿using financas_backend.Data;
-using financas_backend.DTOs;
-using financas_backend.Models;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
+using financas_backend.Data;
+using financas_backend.DTOs;
+using financas_backend.Models;
 
 namespace financas_backend.Controllers
 {
@@ -119,13 +116,13 @@ namespace financas_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TransacaoResponseDTO>> CreateTransacao(TransacaoCreateDTO transacaoDto)
+        public async Task<ActionResult<TransacaoResponseDTO>> CreateTransacao([FromBody] TransacaoCreateDTO dto)
         {
             var usuarioId = GetUsuarioId();
 
             // Verifica se a categoria pertence ao usuário
             var categoriaExiste = await _context.Categorias
-                .AnyAsync(c => c.Id == transacaoDto.CategoriaId && c.UsuarioId == usuarioId);
+                .AnyAsync(c => c.Id == dto.CategoriaId && c.UsuarioId == usuarioId);
 
             if (!categoriaExiste)
             {
@@ -134,15 +131,15 @@ namespace financas_backend.Controllers
 
             var transacao = new Transacao
             {
-                Descricao = transacaoDto.Descricao,
-                Valor = transacaoDto.Valor,
-                Tipo = transacaoDto.Tipo,
-                Data = transacaoDto.Data,
-                CategoriaId = transacaoDto.CategoriaId,
+                Descricao = dto.Descricao,
+                Valor = dto.Valor,
+                Tipo = dto.Tipo,
+                Data = dto.Data,
+                CategoriaId = dto.CategoriaId,
                 UsuarioId = usuarioId,
-                Observacoes = transacaoDto.Observacoes,
-                Recorrente = transacaoDto.Recorrente,
-                TipoRecorrencia = transacaoDto.TipoRecorrencia
+                Observacoes = dto.Observacoes,
+                Recorrente = dto.Recorrente,
+                TipoRecorrencia = dto.TipoRecorrencia
             };
 
             _context.Transacoes.Add(transacao);
@@ -175,7 +172,7 @@ namespace financas_backend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTransacao(int id, TransacaoUpdateDTO transacaoDto)
+        public async Task<IActionResult> UpdateTransacao(int id, [FromBody] TransacaoUpdateDTO dto)
         {
             var usuarioId = GetUsuarioId();
 
@@ -189,21 +186,21 @@ namespace financas_backend.Controllers
 
             // Verifica se a categoria pertence ao usuário
             var categoriaExiste = await _context.Categorias
-                .AnyAsync(c => c.Id == transacaoDto.CategoriaId && c.UsuarioId == usuarioId);
+                .AnyAsync(c => c.Id == dto.CategoriaId && c.UsuarioId == usuarioId);
 
             if (!categoriaExiste)
             {
                 return BadRequest(new { message = "Categoria inválida" });
             }
 
-            transacao.Descricao = transacaoDto.Descricao;
-            transacao.Valor = transacaoDto.Valor;
-            transacao.Tipo = transacaoDto.Tipo;
-            transacao.Data = transacaoDto.Data;
-            transacao.CategoriaId = transacaoDto.CategoriaId;
-            transacao.Observacoes = transacaoDto.Observacoes;
-            transacao.Recorrente = transacaoDto.Recorrente;
-            transacao.TipoRecorrencia = transacaoDto.TipoRecorrencia;
+            transacao.Descricao = dto.Descricao;
+            transacao.Valor = dto.Valor;
+            transacao.Tipo = dto.Tipo;
+            transacao.Data = dto.Data;
+            transacao.CategoriaId = dto.CategoriaId;
+            transacao.Observacoes = dto.Observacoes;
+            transacao.Recorrente = dto.Recorrente;
+            transacao.TipoRecorrencia = dto.TipoRecorrencia;
             transacao.DataAtualizacao = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();

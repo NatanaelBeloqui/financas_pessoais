@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using financas_backend.Models;
 
 namespace financas_backend.DTOs
@@ -10,6 +11,7 @@ namespace financas_backend.DTOs
         public string Nome { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Tipo é obrigatório")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public TipoTransacao Tipo { get; set; }
 
         [MaxLength(7)]
@@ -40,6 +42,7 @@ namespace financas_backend.DTOs
     {
         public int Id { get; set; }
         public string Nome { get; set; } = string.Empty;
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public TipoTransacao Tipo { get; set; }
         public string Cor { get; set; } = string.Empty;
         public string Icone { get; set; } = string.Empty;
