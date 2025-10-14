@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
-import Layout from '../components/layout/Layout';
-import categoriaService from '../services/categoriaService';
-import { Plus, Edit2, Trash2, Tag } from 'lucide-react';
+import { Plus, Edit2, Trash2, FolderOpen, TrendingUp, TrendingDown, Search } from 'lucide-react';
+import { categoriaService } from '../services/categoriaService';
 
 const Categorias = () => {
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingCategoria, setEditingCategoria] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     nome: '',
-    tipo: 'Receita',
-    cor: '#3B82F6',
-    icone: 'tag',
+    tipo: 'Despesa',
+    cor: '#EF4444',
+    icone: 'shopping-cart'
   });
 
   useEffect(() => {
@@ -38,24 +38,11 @@ const Categorias = () => {
       } else {
         await categoriaService.create(formData);
       }
-      setShowModal(false);
-      resetForm();
       loadCategorias();
+      handleCloseModal();
     } catch (error) {
       console.error('Erro ao salvar categoria:', error);
-      alert('Erro ao salvar categoria');
     }
-  };
-
-  const handleEdit = (categoria) => {
-    setEditingCategoria(categoria);
-    setFormData({
-      nome: categoria.nome,
-      tipo: categoria.tipo,
-      cor: categoria.cor,
-      icone: categoria.icone,
-    });
-    setShowModal(true);
   };
 
   const handleDelete = async (id) => {
@@ -65,171 +52,221 @@ const Categorias = () => {
         loadCategorias();
       } catch (error) {
         console.error('Erro ao excluir categoria:', error);
-        alert('Erro ao excluir categoria. Pode haver transações associadas.');
       }
     }
   };
 
-  const resetForm = () => {
+  const handleEdit = (categoria) => {
+    setEditingCategoria(categoria);
     setFormData({
-      nome: '',
-      tipo: 'Receita',
-      cor: '#3B82F6',
-      icone: 'tag',
+      nome: categoria.nome,
+      tipo: categoria.tipo,
+      cor: categoria.cor,
+      icone: categoria.icone
     });
-    setEditingCategoria(null);
+    setShowModal(true);
   };
 
-  const closeModal = () => {
+  const handleCloseModal = () => {
     setShowModal(false);
-    resetForm();
+    setEditingCategoria(null);
+    setFormData({
+      nome: '',
+      tipo: 'Despesa',
+      cor: '#EF4444',
+      icone: 'shopping-cart'
+    });
   };
+
+  const filteredCategorias = categorias.filter(cat =>
+    cat.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (loading) {
     return (
-      <Layout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-xl text-gray-600">Carregando...</div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-emerald-500 mx-auto mb-4"></div>
+          <p className="text-slate-600 font-semibold">Carregando categorias...</p>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">Categorias</h1>
-            <p className="text-gray-600 mt-1">Gerencie suas categorias de receitas e despesas</p>
-          </div>
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
-          >
-            <Plus size={20} />
-            <span>Nova Categoria</span>
-          </button>
+    <div className="animate-fadeIn">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">Categorias</h1>
+          <p className="text-slate-600">Organize suas transações em categorias</p>
         </div>
+        <button
+          onClick={() => setShowModal(true)}
+          className="btn-primary flex items-center gap-2"
+        >
+          <Plus className="w-5 h-5" />
+          Nova Categoria
+        </button>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categorias.map((categoria) => (
-            <div key={categoria.id} className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center space-x-3">
-                  <div
-                    className="p-3 rounded-full"
-                    style={{ backgroundColor: `${categoria.cor}20` }}
-                  >
-                    <Tag size={24} style={{ color: categoria.cor }} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-800">{categoria.nome}</h3>
-                    <span
-                      className={`inline-block px-2 py-1 text-xs rounded-full mt-1 ${
-                        categoria.tipo === 'Receita'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-red-100 text-red-700'
-                      }`}
-                    >
-                      {categoria.tipo}
-                    </span>
-                  </div>
+      {/* Barra de Busca */}
+      <div className="mb-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+          <input
+            type="text"
+            placeholder="Buscar categoria..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="input-field pl-11 w-full sm:w-96"
+          />
+        </div>
+      </div>
+
+      {/* Grid de Categorias */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {filteredCategorias.map((categoria) => (
+          <div
+            key={categoria.id}
+            className="card hover:scale-105 transition-transform duration-300"
+            style={{ borderLeft: `4px solid ${categoria.cor}` }}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div
+                  className="p-3 rounded-lg shadow-lg"
+                  style={{ backgroundColor: `${categoria.cor}20` }}
+                >
+                  {categoria.tipo === 'Receita' ? (
+                    <TrendingUp className="w-6 h-6" style={{ color: categoria.cor }} />
+                  ) : (
+                    <TrendingDown className="w-6 h-6" style={{ color: categoria.cor }} />
+                  )}
                 </div>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleEdit(categoria)}
-                    className="p-2 text-blue-600 hover:bg-blue-50 rounded transition"
+                <div>
+                  <h3 className="font-bold text-slate-800">{categoria.nome}</h3>
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full ${
+                      categoria.tipo === 'Receita'
+                        ? 'bg-emerald-100 text-emerald-700'
+                        : 'bg-red-100 text-red-700'
+                    }`}
                   >
-                    <Edit2 size={18} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(categoria.id)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded transition"
-                  >
-                    <Trash2 size={18} />
-                  </button>
+                    {categoria.tipo}
+                  </span>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
 
-        {categorias.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-lg shadow">
-            <p className="text-gray-500">Nenhuma categoria encontrada</p>
-            <button
-              onClick={() => setShowModal(true)}
-              className="mt-4 text-blue-600 hover:text-blue-700 font-medium"
-            >
-              Criar primeira categoria
-            </button>
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={() => handleEdit(categoria)}
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-semibold"
+              >
+                <Edit2 className="w-4 h-4" />
+                Editar
+              </button>
+              <button
+                onClick={() => handleDelete(categoria.id)}
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-semibold"
+              >
+                <Trash2 className="w-4 h-4" />
+                Excluir
+              </button>
+            </div>
           </div>
-        )}
+        ))}
       </div>
 
-      {/* Modal */}
+      {filteredCategorias.length === 0 && (
+        <div className="text-center py-12">
+          <FolderOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+          <p className="text-slate-500 text-lg">Nenhuma categoria encontrada</p>
+          <p className="text-slate-400 text-sm">Crie sua primeira categoria para começar</p>
+        </div>
+      )}
+
+      {/* Modal de Criação/Edição */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              {editingCategoria ? 'Editar Categoria' : 'Nova Categoria'}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-fadeIn">
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-6 rounded-t-2xl">
+              <h2 className="text-2xl font-bold text-white">
+                {editingCategoria ? 'Editar Categoria' : 'Nova Categoria'}
+              </h2>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Nome</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Nome da Categoria
+                </label>
                 <input
                   type="text"
                   value={formData.nome}
                   onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="input-field"
+                  placeholder="Ex: Alimentação"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Tipo</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Tipo
+                </label>
                 <select
                   value={formData.tipo}
                   onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  disabled={editingCategoria}
+                  className="input-field"
                 >
-                  <option value="Receita">Receita</option>
                   <option value="Despesa">Despesa</option>
+                  <option value="Receita">Receita</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Cor</label>
-                <input
-                  type="color"
-                  value={formData.cor}
-                  onChange={(e) => setFormData({ ...formData, cor: e.target.value })}
-                  className="w-full h-12 px-2 border border-gray-300 rounded-lg cursor-pointer"
-                />
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Cor
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    value={formData.cor}
+                    onChange={(e) => setFormData({ ...formData, cor: e.target.value })}
+                    className="w-16 h-12 rounded-lg cursor-pointer border-2 border-slate-300"
+                  />
+                  <input
+                    type="text"
+                    value={formData.cor}
+                    onChange={(e) => setFormData({ ...formData, cor: e.target.value })}
+                    className="input-field flex-1"
+                    placeholder="#EF4444"
+                  />
+                </div>
               </div>
 
-              <div className="flex space-x-3 pt-4">
+              <div className="flex gap-3 pt-4">
                 <button
                   type="button"
-                  onClick={closeModal}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+                  onClick={handleCloseModal}
+                  className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-lg font-semibold hover:bg-slate-200 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+                  className="flex-1 btn-primary"
                 >
-                  {editingCategoria ? 'Atualizar' : 'Criar'}
+                  {editingCategoria ? 'Salvar' : 'Criar'}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-    </Layout>
+    </div>
   );
 };
 
