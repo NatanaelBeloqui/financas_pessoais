@@ -1,38 +1,37 @@
 import api from './api';
 
-const transacaoService = {
-  async getAll(filters = {}) {
-    const response = await api.get('/Transacoes', { params: filters });
+export const transacaoService = {
+  getAll: async (params = {}) => {
+    const response = await api.get('/transacoes', { params });
     return response.data;
   },
 
-  async getById(id) {
-    const response = await api.get(`/Transacoes/${id}`);
+  getById: async (id) => {
+    const response = await api.get(`/transacoes/${id}`);
     return response.data;
   },
 
-  async create(transacao) {
-    const response = await api.post('/Transacoes', transacao);
-    return response.data;
-  },
-
-  async update(id, transacao) {
-    const response = await api.put(`/Transacoes/${id}`, transacao);
-    return response.data;
-  },
-
-  async delete(id) {
-    const response = await api.delete(`/Transacoes/${id}`);
-    return response.data;
-  },
-
-  async getResumo(mes = null, ano = null) {
+  getResumo: async (mes, ano) => {
     const params = {};
     if (mes) params.mes = mes;
     if (ano) params.ano = ano;
-    const response = await api.get('/Transacoes/resumo', { params });
+    const response = await api.get('/transacoes/resumo', { params });
     return response.data;
   },
+
+  create: async (data) => {
+    const response = await api.post('/transacoes', data);
+    return response.data;
+  },
+
+  update: async (id, data) => {
+    const response = await api.put(`/transacoes/${id}`, data);
+    return response.data;
+  },
+
+  delete: async (id) => {
+    await api.delete(`/transacoes/${id}`);
+  }
 };
 
 export default transacaoService;

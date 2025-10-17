@@ -1,31 +1,29 @@
 import api from './api';
 
-const categoriaService = {
-  async getAll(tipo = null) {
-    const params = tipo ? { tipo } : {};
-    const response = await api.get('/Categorias', { params });
+export const categoriaService = {
+  getAll: async () => {
+    const response = await api.get('/categorias');
     return response.data;
   },
 
-  async getById(id) {
-    const response = await api.get(`/Categorias/${id}`);
+  getById: async (id) => {
+    const response = await api.get(`/categorias/${id}`);
     return response.data;
   },
 
-  async create(categoria) {
-    const response = await api.post('/Categorias', categoria);
+  create: async (data) => {
+    const response = await api.post('/categorias', data);
     return response.data;
   },
 
-  async update(id, categoria) {
-    const response = await api.put(`/Categorias/${id}`, categoria);
+  update: async (id, data) => {
+    const response = await api.put(`/categorias/${id}`, data);
     return response.data;
   },
 
-  async delete(id) {
-    const response = await api.delete(`/Categorias/${id}`);
-    return response.data;
-  },
+  delete: async (id) => {
+    await api.delete(`/categorias/${id}`);
+  }
 };
 
 export default categoriaService;

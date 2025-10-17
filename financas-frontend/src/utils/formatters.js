@@ -1,26 +1,33 @@
-export const formatCurrency = (value) => {
+// Formatar moeda em Real (R$)
+export const formatarMoeda = (value) => {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
-    currency: 'BRL',
+    currency: 'BRL'
   }).format(value);
 };
 
-export const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return new Intl.DateFormat('pt-BR').format(date);
+// Formatar data (DD/MM/YYYY)
+export const formatarData = (dateString) => {
+  return new Date(dateString).toLocaleDateString('pt-BR');
 };
 
+// Formatar data para input (YYYY-MM-DD)
 export const formatDateToInput = (dateString) => {
-  const date = new Date(dateString);
-  return date.toISOString().split('T')[0];
+  return new Date(dateString).toISOString().split('T')[0];
 };
 
+// Classes CSS por tipo
 export const getTipoClass = (tipo) => {
   return tipo === 'Receita' 
-    ? 'text-green-600 bg-green-50' 
-    : 'text-red-600 bg-red-50';
+    ? 'text-green-600 bg-green-100' 
+    : 'text-red-600 bg-red-100';
 };
 
+// Ícone por tipo
 export const getTipoIcon = (tipo) => {
   return tipo === 'Receita' ? '↑' : '↓';
 };
+
+// Exports alternativos (compatibilidade)
+export const formatCurrency = formatarMoeda;
+export const formatDate = formatarData;

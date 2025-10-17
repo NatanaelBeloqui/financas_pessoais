@@ -1,9 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\financas-backend",
-    "\\financas-backend\\Controllers",
-    "\\financas-backend\\DTOs"
+    "\\financas-backend"
   ],
+  "SelectedNode": "\\financas-backend\\Controllers",
   "PreviewInSolutionExplorer": false
 }
