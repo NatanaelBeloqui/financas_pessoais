@@ -1,49 +1,63 @@
 import api from './api';
 
 const authService = {
-  async register(nome, email, password, confirmPassword) {
-    const response = await api.post('/Auth/register', {
-      nome,
-      email,
-      password,
-      confirmPassword,
-    });
-    
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.usuario));
+  register: async (userData) => {
+    try {
+      // Backend espera: nome, email, password, confirmPassword
+      const response = await api.post('/Auth/register', {
+        nome: userData.nome,
+        email: userData.email,
+        password: userData.password,
+        confirmPassword: userData.confirmPassword
+      });
+      
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.usuario));
+      }
+      
+      return response.data;
+    } catch (error) {
+      console.error('Erro no registro:', error.response?.data);
+      throw error.response?.data || error.message;
     }
-    
-    return response.data;
   },
 
-  async login(email, password) {
-    const response = await api.post('/Auth/login', {
-      email,
-      password,
-    });
-    
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.usuario));
+  login: async (credentials) => {
+    try {
+      // Backend espera: email, password
+      const response = await api.post('/Auth/login', {
+        email: credentials.email,
+        password: credentials.password
+      });
+      
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.usuario));
+      }
+      
+      return response.data;
+    } catch (error) {
+      console.error('Erro no login:', error.response?.data);
+      throw error.response?.data || error.message;
     }
-    
-    return response.data;
   },
 
-  logout() {
+  logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
   },
 
-  getCurrentUser() {
+  getCurrentUser: () => {
     const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null;
+    if (userStr) return JSON.parse(userStr);
+    return null;
   },
 
-  isAuthenticated() {
-    return !!localStorage.getItem('token');
-  },
+  getToken: () => {
+    return localStorage.getItem('token');
+  }
 };
 
+export { authService };
 export default authService;
