@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Wallet, Mail, Lock, TrendingUp, ArrowRight } from 'lucide-react';
+import { Wallet, Mail, Lock, ArrowRight, TrendingUp, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -17,13 +19,33 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await login(email, password);
+      await login(formData);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Erro ao fazer login. Verifique suas credenciais.');
+      console.error('Erro completo:', err);
+      
+      // Extrai mensagens de erro do backend
+      if (err.errors) {
+        const errorMessages = Object.values(err.errors).flat().join('. ');
+        setError(errorMessages);
+      } else if (err.message) {
+        setError(err.message);
+      } else if (typeof err === 'string') {
+        setError(err);
+      } else {
+        setError('Email ou senha inválidos. Tente novamente.');
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+    setError('');
   };
 
   return (
@@ -42,19 +64,20 @@ const Login = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full mb-4 shadow-lg">
               <Wallet className="w-8 h-8 text-emerald-600" />
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Finanças Pessoais</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">Bem-vindo de volta!</h1>
             <p className="text-emerald-50 flex items-center justify-center gap-2">
               <TrendingUp className="w-4 h-4" />
-              Controle seu dinheiro com inteligência
+              Continue gerenciando suas finanças
             </p>
           </div>
 
           {/* Formulário */}
           <div className="p-8">
-            <h2 className="text-2xl font-bold text-slate-800 mb-6">Entre na sua conta</h2>
+            <h2 className="text-2xl font-bold text-slate-800 mb-6">Entrar na sua conta</h2>
 
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+              <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                 <p className="text-red-700 text-sm">{error}</p>
               </div>
             )}
@@ -69,11 +92,14 @@ const Login = () => {
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                   <input
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     placeholder="seu@email.com"
                     className="input-field pl-11"
                     required
+                    disabled={loading}
+                    autoComplete="email"
                   />
                 </div>
               </div>
@@ -87,13 +113,33 @@ const Login = () => {
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                   <input
                     type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="senha"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Digite sua senha"
                     className="input-field pl-11"
                     required
+                    disabled={loading}
+                    autoComplete="current-password"
                   />
                 </div>
+              </div>
+
+              {/* Esqueceu a senha - TODO */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <input
+                    id="remember-me"
+                    type="checkbox"
+                    className="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
+                  />
+                  <label htmlFor="remember-me" className="ml-2 text-sm text-slate-600">
+                    Lembrar de mim
+                  </label>
+                </div>
+                <a href="#" className="text-sm text-emerald-600 hover:text-emerald-700 font-semibold hover:underline">
+                  Esqueceu a senha?
+                </a>
               </div>
 
               {/* Botão de Login */}
@@ -121,7 +167,7 @@ const Login = () => {
                   to="/register"
                   className="text-emerald-600 font-semibold hover:text-emerald-700 hover:underline transition-colors"
                 >
-                  Cadastre-se gratuitamente
+                  Criar conta grátis
                 </Link>
               </p>
             </div>
