@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Wallet, User, Mail, Lock, AlertCircle } from 'lucide-react';
+import { User, Mail, Lock, Wallet, AlertCircle, CheckCircle } from 'lucide-react';
 
 const Register = () => {
   const [nome, setNome] = useState('');
@@ -13,12 +13,29 @@ const Register = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  // Validação de senha
+  const passwordRequirements = {
+    minLength: password.length >= 8,
+    hasUpper: /[A-Z]/.test(password),
+    hasLower: /[a-z]/.test(password),
+    hasNumber: /[0-9]/.test(password),
+    hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+  };
+
+  const allRequirementsMet = Object.values(passwordRequirements).every(Boolean);
+  const passwordsMatch = password === confirmPassword && password.length > 0;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
+    if (!allRequirementsMet) {
+      setError('A senha não atende todos os requisitos de segurança');
+      return;
+    }
+
     if (password !== confirmPassword) {
-      setError('As senhas não conferem');
+      setError('As senhas não coincidem');
       return;
     }
 
@@ -28,112 +45,326 @@ const Register = () => {
       await register(nome, email, password, confirmPassword);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Erro ao criar conta');
+      console.error('Erro no registro:', err);
+      if (err.response?.data?.errors) {
+        const errorMessages = Object.values(err.response.data.errors).flat();
+        setError(errorMessages.join('. '));
+      } else if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Erro ao criar conta. Tente novamente.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-2xl w-full max-w-md p-8">
-        <div className="flex flex-col items-center mb-8">
-          <div className="bg-green-600 p-3 rounded-full mb-4">
-            <Wallet size={40} className="text-white" />
+    <div style={styles.container}>
+      <div style={styles.card}>
+        {/* Logo */}
+        <div style={styles.logoContainer}>
+          <div style={styles.logoIcon}>
+            <Wallet size={40} style={{ color: 'white' }} />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800">Criar Conta</h1>
-          <p className="text-gray-600 mt-2">Comece a controlar suas finanças</p>
+          <h1 style={styles.title}>Finanças Pessoais</h1>
+          <p style={styles.subtitle}>Crie sua conta</p>
         </div>
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4 flex items-center">
-            <AlertCircle size={20} className="mr-2" />
-            {error}
-          </div>
-        )}
+        {/* Formulário */}
+        <form onSubmit={handleSubmit} style={styles.form}>
+          {/* Erro */}
+          {error && (
+            <div style={styles.errorBox}>
+              <AlertCircle size={20} style={{ color: '#dc2626', flexShrink: 0 }} />
+              <span style={styles.errorText}>{error}</span>
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Nome</label>
-            <div className="relative">
-              <User size={20} className="absolute left-3 top-3 text-gray-400" />
+          {/* Nome */}
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Nome Completo</label>
+            <div style={styles.inputWrapper}>
+              <User size={20} style={styles.inputIcon} />
               <input
                 type="text"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="Seu nome"
+                placeholder="Seu nome completo"
                 required
+                disabled={loading}
+                style={{...styles.input, opacity: loading ? 0.6 : 1}}
               />
             </div>
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Email</label>
-            <div className="relative">
-              <Mail size={20} className="absolute left-3 top-3 text-gray-400" />
+          {/* Email */}
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Email</label>
+            <div style={styles.inputWrapper}>
+              <Mail size={20} style={styles.inputIcon} />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="seu@email.com"
                 required
+                disabled={loading}
+                style={{...styles.input, opacity: loading ? 0.6 : 1}}
+                autoComplete="email"
               />
             </div>
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Senha</label>
-            <div className="relative">
-              <Lock size={20} className="absolute left-3 top-3 text-gray-400" />
+          {/* Senha */}
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Senha</label>
+            <div style={styles.inputWrapper}>
+              <Lock size={20} style={styles.inputIcon} />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="••••••••"
-                minLength={6}
                 required
+                disabled={loading}
+                style={{...styles.input, opacity: loading ? 0.6 : 1}}
+                autoComplete="new-password"
               />
             </div>
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Confirmar Senha</label>
-            <div className="relative">
-              <Lock size={20} className="absolute left-3 top-3 text-gray-400" />
+          {/* Requisitos de Senha */}
+          {password.length > 0 && (
+            <div style={styles.requirementsBox}>
+              <p style={styles.requirementsTitle}>Requisitos da senha:</p>
+              <div style={styles.requirement}>
+                <span style={{color: passwordRequirements.minLength ? '#10b981' : '#9ca3af'}}>
+                  {passwordRequirements.minLength ? '✓' : '○'}
+                </span>
+                <span style={{color: passwordRequirements.minLength ? '#374151' : '#9ca3af', fontSize: '13px'}}>
+                  Mínimo de 8 caracteres
+                </span>
+              </div>
+              <div style={styles.requirement}>
+                <span style={{color: passwordRequirements.hasUpper ? '#10b981' : '#9ca3af'}}>
+                  {passwordRequirements.hasUpper ? '✓' : '○'}
+                </span>
+                <span style={{color: passwordRequirements.hasUpper ? '#374151' : '#9ca3af', fontSize: '13px'}}>
+                  Letra maiúscula
+                </span>
+              </div>
+              <div style={styles.requirement}>
+                <span style={{color: passwordRequirements.hasLower ? '#10b981' : '#9ca3af'}}>
+                  {passwordRequirements.hasLower ? '✓' : '○'}
+                </span>
+                <span style={{color: passwordRequirements.hasLower ? '#374151' : '#9ca3af', fontSize: '13px'}}>
+                  Letra minúscula
+                </span>
+              </div>
+              <div style={styles.requirement}>
+                <span style={{color: passwordRequirements.hasNumber ? '#10b981' : '#9ca3af'}}>
+                  {passwordRequirements.hasNumber ? '✓' : '○'}
+                </span>
+                <span style={{color: passwordRequirements.hasNumber ? '#374151' : '#9ca3af', fontSize: '13px'}}>
+                  Número
+                </span>
+              </div>
+              <div style={styles.requirement}>
+                <span style={{color: passwordRequirements.hasSpecial ? '#10b981' : '#9ca3af'}}>
+                  {passwordRequirements.hasSpecial ? '✓' : '○'}
+                </span>
+                <span style={{color: passwordRequirements.hasSpecial ? '#374151' : '#9ca3af', fontSize: '13px'}}>
+                  Caractere especial (!@#$%^&*)
+                </span>
+              </div>
+              {allRequirementsMet && (
+                <div style={{...styles.requirement, color: '#10b981', fontWeight: '600', marginTop: '8px'}}>
+                  <CheckCircle size={16} />
+                  <span style={{fontSize: '13px'}}>Senha forte! ✓</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Confirmar Senha */}
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Confirmar Senha</label>
+            <div style={styles.inputWrapper}>
+              <Lock size={20} style={styles.inputIcon} />
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="••••••••"
                 required
+                disabled={loading}
+                style={{...styles.input, opacity: loading ? 0.6 : 1}}
+                autoComplete="new-password"
               />
             </div>
+            {confirmPassword.length > 0 && (
+              <span style={{fontSize: '12px', color: passwordsMatch ? '#10b981' : '#dc2626'}}>
+                {passwordsMatch ? '✓ As senhas coincidem!' : '✗ As senhas não coincidem'}
+              </span>
+            )}
           </div>
 
+          {/* Botão */}
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={loading || !allRequirementsMet || !passwordsMatch}
+            style={{
+              ...styles.button,
+              opacity: (loading || !allRequirementsMet || !passwordsMatch) ? 0.5 : 1,
+              cursor: (loading || !allRequirementsMet || !passwordsMatch) ? 'not-allowed' : 'pointer'
+            }}
           >
-            {loading ? 'Criando conta...' : 'Criar Conta'}
+            {loading ? 'Criando conta...' : 'Cadastrar'}
           </button>
-        </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-gray-600">
+          {/* Link Login */}
+          <p style={styles.linkText}>
             Já tem uma conta?{' '}
-            <Link to="/login" className="text-green-600 hover:text-green-700 font-medium">
+            <Link to="/login" style={styles.link}>
               Entrar
             </Link>
           </p>
-        </div>
+        </form>
       </div>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    padding: '20px'
+  },
+  card: {
+    background: 'white',
+    borderRadius: '16px',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+    padding: '40px',
+    width: '100%',
+    maxWidth: '500px',
+    maxHeight: '90vh',
+    overflowY: 'auto'
+  },
+  logoContainer: {
+    textAlign: 'center',
+    marginBottom: '32px'
+  },
+  logoIcon: {
+    display: 'inline-flex',
+    padding: '16px',
+    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+    borderRadius: '16px',
+    marginBottom: '16px'
+  },
+  title: {
+    fontSize: '28px',
+    fontWeight: 'bold',
+    color: '#1f2937',
+    marginBottom: '8px'
+  },
+  subtitle: {
+    color: '#6b7280',
+    fontSize: '14px'
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px'
+  },
+  errorBox: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '12px 16px',
+    background: '#fef2f2',
+    border: '1px solid #fecaca',
+    borderRadius: '8px'
+  },
+  errorText: {
+    color: '#dc2626',
+    fontSize: '14px'
+  },
+  inputGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px'
+  },
+  label: {
+    color: '#374151',
+    fontSize: '14px',
+    fontWeight: '500'
+  },
+  inputWrapper: {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center'
+  },
+  inputIcon: {
+    position: 'absolute',
+    left: '12px',
+    color: '#9ca3af',
+    pointerEvents: 'none'
+  },
+  input: {
+    width: '100%',
+    padding: '12px 12px 12px 44px',
+    border: '2px solid #e5e7eb',
+    borderRadius: '8px',
+    fontSize: '14px',
+    transition: 'all 0.2s',
+    outline: 'none',
+    fontFamily: 'inherit'
+  },
+  requirementsBox: {
+    padding: '12px',
+    background: '#f9fafb',
+    borderRadius: '8px',
+    border: '1px solid #e5e7eb'
+  },
+  requirementsTitle: {
+    fontSize: '13px',
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: '8px'
+  },
+  requirement: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    marginBottom: '4px'
+  },
+  button: {
+    width: '100%',
+    padding: '14px',
+    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '16px',
+    fontWeight: '600',
+    transition: 'all 0.3s',
+    marginTop: '8px'
+  },
+  linkText: {
+    textAlign: 'center',
+    color: '#6b7280',
+    fontSize: '14px'
+  },
+  link: {
+    color: '#10b981',
+    fontWeight: '600',
+    textDecoration: 'none'
+  }
 };
 
 export default Register;

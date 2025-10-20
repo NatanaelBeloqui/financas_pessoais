@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
@@ -6,88 +7,78 @@ import Dashboard from './pages/Dashboard';
 import Categorias from './pages/Categorias';
 import Transacoes from './pages/Transacoes';
 
-// Componente para proteger rotas (só acessa se estiver logado)
-const PrivateRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl text-gray-600">Carregando...</div>
-      </div>
-    );
+// Componente de Rota Protegida
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
   }
-
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  
+  return children;
 };
 
-// Componente para rotas públicas (redireciona se já estiver logado)
+// Componente de Rota Pública (redireciona se já estiver logado)
 const PublicRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl text-gray-600">Carregando...</div>
-      </div>
-    );
+  const { isAuthenticated } = useAuth();
+  
+  if (isAuthenticated()) {
+    return <Navigate to="/dashboard" replace />;
   }
-
-  return !isAuthenticated ? children : <Navigate to="/dashboard" />;
+  
+  return children;
 };
 
 function AppRoutes() {
   return (
     <Routes>
       {/* Rotas Públicas */}
-      <Route
-        path="/login"
+      <Route 
+        path="/login" 
         element={
           <PublicRoute>
             <Login />
           </PublicRoute>
-        }
+        } 
       />
-      <Route
-        path="/register"
+      <Route 
+        path="/register" 
         element={
           <PublicRoute>
             <Register />
           </PublicRoute>
-        }
+        } 
       />
 
-      {/* Rotas Privadas (protegidas) */}
-      <Route
-        path="/dashboard"
+      {/* Rotas Protegidas */}
+      <Route 
+        path="/dashboard" 
         element={
-          <PrivateRoute>
+          <ProtectedRoute>
             <Dashboard />
-          </PrivateRoute>
-        }
+          </ProtectedRoute>
+        } 
       />
-      <Route
-        path="/categorias"
+      <Route 
+        path="/categorias" 
         element={
-          <PrivateRoute>
+          <ProtectedRoute>
             <Categorias />
-          </PrivateRoute>
-        }
+          </ProtectedRoute>
+        } 
       />
-      <Route
-        path="/transacoes"
+      <Route 
+        path="/transacoes" 
         element={
-          <PrivateRoute>
+          <ProtectedRoute>
             <Transacoes />
-          </PrivateRoute>
-        }
+          </ProtectedRoute>
+        } 
       />
 
-      {/* Rota padrão - redireciona pra login */}
-      <Route path="/" element={<Navigate to="/login" />} />
-      
-      {/* Rota 404 - redireciona pra dashboard se logado, senão pro login */}
-      <Route path="*" element={<Navigate to="/dashboard" />} />
+      {/* Rota padrão */}
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }

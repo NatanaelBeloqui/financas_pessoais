@@ -1,138 +1,169 @@
-import { useState, useEffect } from 'react';
-import Layout from '../components/layout/Layout';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 import transacaoService from '../services/transacaoService';
 import { formatCurrency } from '../utils/formatters';
-import { TrendingUp, TrendingDown, Wallet, Calendar } from 'lucide-react';
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  Wallet,
+  DollarSign,
+  ArrowUpCircle,
+  ArrowDownCircle
+} from 'lucide-react';
+import Sidebar from '../components/layout/Sidebar';
 
 const Dashboard = () => {
-  const [resumo, setResumo] = useState(null);
-  const [transacoesRecentes, setTransacoesRecentes] = useState([]);
+  const { user } = useAuth();
+  const [resumo, setResumo] = useState({
+    totalReceitas: 0,
+    totalDespesas: 0,
+    saldo: 0,
+    quantidadeTransacoes: 0
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
+    carregarResumo();
   }, []);
 
-  const loadData = async () => {
+  const carregarResumo = async () => {
     try {
-      const [resumoData, transacoesData] = await Promise.all([
-        transacaoService.getResumo(),
-        transacaoService.getAll(),
-      ]);
-      setResumo(resumoData);
-      setTransacoesRecentes(transacoesData.slice(0, 5));
+      setLoading(true);
+      const data = await transacaoService.getResumoMensal();
+      setResumo(data);
     } catch (error) {
-      console.error('Erro ao carregar dados:', error);
+      console.error('Erro ao carregar resumo:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <Layout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-xl text-gray-600">Carregando...</div>
-        </div>
-      </Layout>
-    );
-  }
-
   return (
-    <Layout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-          <p className="text-gray-600 mt-1">Visão geral das suas finanças</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <Sidebar />
+      
+      <div className="ml-0 lg:ml-64 p-8 transition-all duration-300">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            Dashboard Financeiro
+          </h1>
+          <p className="text-gray-600">
+            Bem-vindo de volta, <span className="font-semibold">{user?.nome}</span>!
+          </p>
         </div>
 
         {/* Cards de Resumo */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Total Receitas</p>
-                <p className="text-2xl font-bold text-green-600 mt-2">
-                  {formatCurrency(resumo?.totalReceitas || 0)}
-                </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Card Receitas */}
+          <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 text-white shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-white bg-opacity-20 rounded-xl backdrop-blur-sm">
+                <ArrowUpCircle size={32} />
               </div>
-              <div className="bg-green-100 p-3 rounded-full">
-                <TrendingUp size={24} className="text-green-600" />
-              </div>
+              <TrendingUp size={24} className="opacity-80" />
             </div>
+            <h3 className="text-sm font-medium opacity-90 mb-2">Receitas</h3>
+            <p className="text-4xl font-bold mb-2" style={{ color: '#1F2937' }}>
+              {loading ? '...' : formatCurrency(resumo.totalReceitas)}
+            </p>
+            <p className="text-sm opacity-75" style={{ color: '#374151' }}>
+              {resumo.quantidadeTransacoes} transações
+            </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Total Despesas</p>
-                <p className="text-2xl font-bold text-red-600 mt-2">
-                  {formatCurrency(resumo?.totalDespesas || 0)}
-                </p>
+          {/* Card Despesas */}
+          <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl p-6 text-white shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-white bg-opacity-20 rounded-xl backdrop-blur-sm">
+                <ArrowDownCircle size={32} />
               </div>
-              <div className="bg-red-100 p-3 rounded-full">
-                <TrendingDown size={24} className="text-red-600" />
-              </div>
+              <TrendingDown size={24} className="opacity-80" />
             </div>
+            <h3 className="text-sm font-medium opacity-90 mb-2">Despesas</h3>
+            <p className="text-4xl font-bold mb-2" style={{ color: '#1F2937' }}>
+              {loading ? '...' : formatCurrency(resumo.totalDespesas)}
+            </p>
+            <p className="text-sm opacity-75" style={{ color: '#374151' }}>
+              0 transações
+            </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Saldo</p>
-                <p className={`text-2xl font-bold mt-2 ${resumo?.saldo >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
-                  {formatCurrency(resumo?.saldo || 0)}
-                </p>
+          {/* Card Saldo */}
+          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-white bg-opacity-20 rounded-xl backdrop-blur-sm">
+                <Wallet size={32} />
               </div>
-              <div className="bg-blue-100 p-3 rounded-full">
-                <Wallet size={24} className="text-blue-600" />
-              </div>
+              <DollarSign size={24} className="opacity-80" />
             </div>
+            <h3 className="text-sm font-medium opacity-90 mb-2">Saldo</h3>
+            <p className="text-4xl font-bold mb-2" style={{ color: '#1F2937' }}>
+              {loading ? '...' : formatCurrency(resumo.saldo)}
+            </p>
+            <p className="text-sm opacity-75" style={{ color: '#374151' }}>
+              {resumo.saldo >= 0 ? 'Positivo' : 'Negativo'}
+            </p>
           </div>
         </div>
 
-        {/* Transações Recentes */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-800">Transações Recentes</h2>
+        {/* Dicas de Economia */}
+        <div className="bg-white rounded-2xl p-6 shadow-lg">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg">
+              <DollarSign className="text-white" size={24} />
+            </div>
+            <h2 className="text-xl font-bold text-gray-800">Dicas de Economia</h2>
           </div>
-          <div className="p-6">
-            {transacoesRecentes.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">Nenhuma transação encontrada</p>
-            ) : (
-              <div className="space-y-4">
-                {transacoesRecentes.map((transacao) => (
-                  <div key={transacao.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <div className={`p-2 rounded-full ${transacao.tipo === 'Receita' ? 'bg-green-100' : 'bg-red-100'}`}>
-                        {transacao.tipo === 'Receita' ? (
-                          <TrendingUp size={20} className="text-green-600" />
-                        ) : (
-                          <TrendingDown size={20} className="text-red-600" />
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-800">{transacao.descricao}</p>
-                        <p className="text-sm text-gray-500">{transacao.categoriaNome}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className={`font-bold ${transacao.tipo === 'Receita' ? 'text-green-600' : 'text-red-600'}`}>
-                        {transacao.tipo === 'Receita' ? '+' : '-'} {formatCurrency(transacao.valor)}
-                      </p>
-                      <p className="text-sm text-gray-500 flex items-center justify-end mt-1">
-                        <Calendar size={14} className="mr-1" />
-                        {new Date(transacao.data).toLocaleDateString('pt-BR')}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+          <ul className="space-y-3">
+            <li className="flex items-start gap-2 text-gray-700">
+              <span className="text-emerald-500 font-bold">✓</span>
+              Registre todas as suas despesas diariamente
+            </li>
+            <li className="flex items-start gap-2 text-gray-700">
+              <span className="text-emerald-500 font-bold">✓</span>
+              Defina metas de economia mensais
+            </li>
+            <li className="flex items-start gap-2 text-gray-700">
+              <span className="text-emerald-500 font-bold">✓</span>
+              Evite compras por impulso
+            </li>
+            <li className="flex items-start gap-2 text-gray-700">
+              <span className="text-emerald-500 font-bold">✓</span>
+              Revise seus gastos semanalmente
+            </li>
+          </ul>
+        </div>
+
+        {/* Status Financeiro */}
+        <div className="mt-6 bg-white rounded-2xl p-6 shadow-lg">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg">
+              <TrendingUp className="text-white" size={24} />
+            </div>
+            <h2 className="text-xl font-bold text-gray-800">Status Financeiro</h2>
+          </div>
+          
+          <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border-l-4 border-emerald-500">
+            <p className="font-semibold text-emerald-700 mb-2">✓ Situação Positiva</p>
+            <p className="text-gray-700 text-sm">
+              Suas receitas estão superando as despesas. Continue assim!
+            </p>
+          </div>
+
+          <div className="mt-4 space-y-2">
+            <div className="flex justify-between text-gray-700">
+              <span>Total de Transações</span>
+              <span className="font-bold text-gray-900">{resumo.quantidadeTransacoes}</span>
+            </div>
+            <div className="flex justify-between text-gray-700">
+              <span>Média de Despesas</span>
+              <span className="font-bold text-gray-900">{formatCurrency(0)}</span>
+            </div>
           </div>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 };
 
