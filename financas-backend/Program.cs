@@ -8,14 +8,14 @@ using financas_backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ConfiguraÁ„o do DbContext (MySQL)
+// Configura√ß√£o do DbContext (MySQL)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-// ConfiguraÁ„o de AutenticaÁ„o JWT
+// Configura√ß√£o de Autentica√ß√£o JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("SecretKey n„o configurada");
+var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("SecretKey n√£o configurada");
 
 builder.Services.AddAuthentication(options =>
 {
@@ -39,7 +39,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// ConfiguraÁ„o de CORS
+// Configura√ß√£o de CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -57,18 +57,19 @@ builder.Services.AddControllers();
 // Adiciona Services
 builder.Services.AddScoped<AuthService>();
 
-// ConfiguraÁ„o do Swagger (documentaÁ„o da API)
+// ‚ö†Ô∏è SWAGGER DESABILITADO POR SEGURAN√áA
+// Descomente apenas para desenvolvimento local se necess√°rio
+/*
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "FinanÁas Pessoais API",
+        Title = "Finan√ßas Pessoais API",
         Version = "v1",
-        Description = "API para controle de finanÁas pessoais com seguranÁa implementada"
+        Description = "API para controle de finan√ßas pessoais com seguran√ßa implementada"
     });
 
-    // ConfiguraÁ„o para JWT no Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header usando o esquema Bearer. Exemplo: \"Authorization: Bearer {token}\"",
@@ -93,18 +94,22 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+*/
 
 var app = builder.Build();
 
-// ConfiguraÁ„o do pipeline HTTP
+// ‚ö†Ô∏è SWAGGER DESABILITADO POR SEGURAN√áA
+// Middleware do Swagger comentado
+/*
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "FinanÁas API v1");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Finan√ßas API v1");
     });
 }
+*/
 
 app.UseHttpsRedirection();
 
@@ -114,7 +119,7 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Servir arquivos est·ticos (uploads de cupons)
+// Servir arquivos est√°ticos (uploads de cupons)
 app.UseStaticFiles();
 
 app.MapControllers();
