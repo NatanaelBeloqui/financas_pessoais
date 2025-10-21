@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using System.Text;
 using financas_backend.Data;
 using financas_backend.Services;
@@ -44,7 +43,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000") // URL do React
+        policy.WithOrigins("http://localhost:3000")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -57,71 +56,13 @@ builder.Services.AddControllers();
 // Adiciona Services
 builder.Services.AddScoped<AuthService>();
 
-// ⚠️ SWAGGER DESABILITADO POR SEGURANÇA
-// Descomente apenas para desenvolvimento local se necessário
-/*
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Finanças Pessoais API",
-        Version = "v1",
-        Description = "API para controle de finanças pessoais com segurança implementada"
-    });
-
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = "JWT Authorization header usando o esquema Bearer. Exemplo: \"Authorization: Bearer {token}\"",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-});
-*/
-
 var app = builder.Build();
 
-// ⚠️ SWAGGER DESABILITADO POR SEGURANÇA
-// Middleware do Swagger comentado
-/*
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Finanças API v1");
-    });
-}
-*/
-
 app.UseHttpsRedirection();
-
-// IMPORTANTE: A ordem importa!
 app.UseCors("AllowFrontend");
-
 app.UseAuthentication();
 app.UseAuthorization();
-
-// Servir arquivos estáticos (uploads de cupons)
 app.UseStaticFiles();
-
 app.MapControllers();
 
 app.Run();
