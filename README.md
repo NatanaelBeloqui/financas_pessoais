@@ -86,7 +86,7 @@ ProjetoCaixeta/
 Antes de começar, certifique-se de ter instalado:
 
 - **Node.js** (v16 ou superior) - [Download](https://nodejs.org/)
-- **.NET 8 SDK** - [Download](https://dotnet.microsoft.com/download)
+- **.NET 9 SDK** - [Download](https://dotnet.microsoft.com/pt-br/download/dotnet/9.0)
 - **MySQL** (via XAMPP ou standalone) - [Download XAMPP](https://www.apachefriends.org/)
 - **Git** - [Download](https://git-scm.com/)
 
