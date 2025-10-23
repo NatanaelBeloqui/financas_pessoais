@@ -23,7 +23,7 @@ Sistema web completo para controle de finanças pessoais com foco em **seguranç
 ## 🛠️ Tecnologias Utilizadas
 
 ### **Backend**
-- **ASP.NET Core 8** - Framework web
+- **ASP.NET Core 9** - Framework web
 - **C#** - Linguagem de programação
 - **Entity Framework Core** - ORM
 - **MySQL** - Banco de dados
