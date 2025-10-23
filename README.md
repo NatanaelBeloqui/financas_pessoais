@@ -8,26 +8,6 @@ Sistema web completo para controle de finanças pessoais com foco em **seguranç
 
 ---
 
-## 📋 Índice
-
-- [Sobre o Projeto](#-sobre-o-projeto)
-- [Funcionalidades](#-funcionalidades)
-- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
-- [Arquitetura](#-arquitetura)
-- [Segurança Implementada](#-segurança-implementada)
-- [Pré-requisitos](#-pré-requisitos)
-- [Instalação](#-instalação)
-- [Configuração](#-configuração)
-- [Executando o Projeto](#-executando-o-projeto)
-- [Estrutura de Pastas](#-estrutura-de-pastas)
-- [API Endpoints](#-api-endpoints)
-- [Melhorias Futuras](#-melhorias-futuras)
-- [Contribuindo](#-contribuindo)
-- [Licença](#-licença)
-- [Autores](#-autores)
-
----
-
 ## 🎯 Sobre o Projeto
 
 Sistema web desenvolvido para gerenciamento de finanças pessoais, permitindo aos usuários:
