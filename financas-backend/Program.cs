@@ -59,6 +59,7 @@ builder.Services.AddScoped<AuthService>();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+app.UseMiddleware<financas_backend.Middlewares.RateLimitingMiddleware>();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
