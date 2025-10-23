@@ -10,72 +10,13 @@ Sistema web completo para controle de finanças pessoais com foco em **seguranç
 
 ## 📋 Índice
 
-- [Sobre o Projeto](#-sobre-o-projeto)
 - [Funcionalidades](#-funcionalidades)
 - [Tecnologias Utilizadas](#-tecnologias-utilizadas)
 - [Arquitetura](#-arquitetura)
-- [Segurança Implementada](#-segurança-implementada)
 - [Pré-requisitos](#-pré-requisitos)
 - [Instalação](#-instalação)
-- [Configuração](#-configuração)
 - [Executando o Projeto](#-executando-o-projeto)
 - [Estrutura de Pastas](#-estrutura-de-pastas)
-- [API Endpoints](#-api-endpoints)
-- [Melhorias Futuras](#-melhorias-futuras)
-- [Contribuindo](#-contribuindo)
-- [Licença](#-licença)
-- [Autores](#-autores)
-
----
-
-## 🎯 Sobre o Projeto
-
-Sistema web desenvolvido para gerenciamento de finanças pessoais, permitindo aos usuários:
-- Controlar receitas e despesas
-- Organizar transações por categorias personalizadas
-- Visualizar resumos financeiros mensais
-- Acompanhar o saldo atual
-
-O projeto foi desenvolvido com **foco em segurança**, implementando proteções contra vulnerabilidades comuns como **XSS, CSRF, SQL Injection** e outras ameaças.
-
----
-
-## ✨ Funcionalidades
-
-### 🔐 Autenticação e Autorização
-- ✅ Cadastro de usuários com validação de senha forte
-- ✅ Login com JWT (JSON Web Tokens)
-- ✅ Senhas criptografadas com BCrypt
-- ✅ Logout com invalidação de sessão
-- ✅ Rotas protegidas por autenticação
-
-### 📊 Dashboard
-- ✅ Resumo mensal de receitas e despesas
-- ✅ Cálculo automático de saldo
-- ✅ Cards com gradientes visuais
-- ✅ Listagem de transações recentes
-
-### 📂 Gestão de Categorias
-- ✅ CRUD completo (Criar, Ler, Atualizar, Deletar)
-- ✅ Categorias de Receita e Despesa
-- ✅ Descrição opcional
-- ✅ Validação de dados
-- ✅ Confirmação antes de excluir
-
-### 💳 Gestão de Transações
-- ✅ CRUD completo
-- ✅ Campos: descrição, valor, data, tipo, categoria
-- ✅ Filtros por tipo, categoria e período
-- ✅ Formatação de valores monetários
-- ✅ Associação com categorias
-- ✅ Confirmação antes de excluir
-
-### 🎨 Interface
-- ✅ Design moderno e responsivo
-- ✅ Menu lateral retrátil (Sidebar)
-- ✅ Feedback visual (mensagens de sucesso/erro)
-- ✅ Ícones e cores intuitivas
-- ✅ CSS puro customizado
 
 ---
 
@@ -137,50 +78,8 @@ ProjetoCaixeta/
     │   ├── App.jsx            # Componente principal
     │   └── index.css          # Estilos globais
     └── package.json
+
 ```
-
----
-
-## 🔒 Segurança Implementada
-
-### **Proteção contra XSS (Cross-Site Scripting)**
-- ✅ React sanitiza automaticamente via Virtual DOM
-- ✅ Inputs com `maxLength` para limitar tamanho
-- ✅ Validação e escape de dados do usuário
-- ✅ Evitado uso de `dangerouslySetInnerHTML`
-
-### **Proteção contra CSRF (Cross-Site Request Forgery)**
-- ✅ Token JWT enviado no header `Authorization`
-- ✅ CORS configurado para aceitar apenas origem do frontend
-- ✅ SameSite cookies (quando necessário)
-
-### **Proteção contra SQL Injection**
-- ✅ Entity Framework com queries parametrizadas
-- ✅ Frontend não envia SQL diretamente
-- ✅ Validação de tipos no backend
-
-### **Autenticação e Autorização**
-- ✅ Senhas hasheadas com BCrypt (custo 12)
-- ✅ JWT com expiração configurável
-- ✅ Validação de senha forte (maiúscula, minúscula, número, especial)
-- ✅ Token armazenado em `localStorage` (frontend)
-- ✅ Logout remove token e invalida sessão
-- ✅ Rotas protegidas por autenticação
-
-### **Validação de Dados**
-- ✅ **Frontend:** Validação básica antes de enviar
-- ✅ **Backend:** Validação rigorosa (única fonte confiável)
-- ✅ Sanitização de inputs (`trim`, escape)
-- ✅ Mensagens de erro genéricas (não expõe detalhes internos)
-
-### **Boas Práticas**
-- ✅ HTTPS (recomendado em produção)
-- ✅ CORS configurado adequadamente
-- ✅ Swagger desabilitado em produção
-- ✅ Confirmação antes de ações destrutivas (deletar)
-- ✅ Logs de auditoria (estrutura criada no banco)
-
----
 
 ## 📦 Pré-requisitos
 
@@ -224,50 +123,6 @@ cd financas-frontend
 # Instalar dependências
 npm install
 ```
-
----
-
-## ⚙️ Configuração
-
-### **Backend - appsettings.json**
-
-Edite o arquivo `financas-backend/appsettings.json`:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Port=3306;Database=FinancasDB;User=root;Password=;"
-  },
-  "JwtSettings": {
-    "SecretKey": "ChaveSecretaSuperSeguraParaJWT_2024!",
-    "Issuer": "FinancasAPI",
-    "Audience": "FinancasApp",
-    "ExpirationMinutes": 60
-  },
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "AllowedHosts": "*"
-}
-```
-
-⚠️ **IMPORTANTE:** Em produção, altere:
-- `SecretKey` para uma chave mais longa e aleatória
-- `ConnectionString` para as credenciais reais do banco
-- `ExpirationMinutes` para um valor menor (15-30 minutos)
-
-### **Frontend - Configuração da API**
-
-Edite o arquivo `financas-frontend/src/services/api.js`:
-
-```javascript
-const API_URL = 'http://localhost:5134/api';
-// Em produção, altere para a URL real da API
-```
-
 ---
 
 ## ▶️ Executando o Projeto
@@ -366,39 +221,6 @@ financas-frontend/
 │   └── index.css                  # Estilos globais
 └── package.json
 ```
-
----
-
-## 🌐 API Endpoints
-
-### **Autenticação**
-
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| POST | `/api/Auth/register` | Cadastrar novo usuário |
-| POST | `/api/Auth/login` | Fazer login |
-
-### **Categorias**
-
-| Método | Endpoint | Descrição | Autenticação |
-|--------|----------|-----------|--------------|
-| GET | `/api/Categorias` | Listar todas | ✅ Requerida |
-| GET | `/api/Categorias/{id}` | Buscar por ID | ✅ Requerida |
-| POST | `/api/Categorias` | Criar categoria | ✅ Requerida |
-| PUT | `/api/Categorias/{id}` | Atualizar categoria | ✅ Requerida |
-| DELETE | `/api/Categorias/{id}` | Deletar categoria | ✅ Requerida |
-
-### **Transações**
-
-| Método | Endpoint | Descrição | Autenticação |
-|--------|----------|-----------|--------------|
-| GET | `/api/Transacoes` | Listar todas | ✅ Requerida |
-| GET | `/api/Transacoes/{id}` | Buscar por ID | ✅ Requerida |
-| GET | `/api/Transacoes/resumo` | Resumo mensal | ✅ Requerida |
-| POST | `/api/Transacoes` | Criar transação | ✅ Requerida |
-| PUT | `/api/Transacoes/{id}` | Atualizar transação | ✅ Requerida |
-| DELETE | `/api/Transacoes/{id}` | Deletar transação | ✅ Requerida |
-
 ---
 
 ## 📊 Banco de Dados
@@ -406,107 +228,196 @@ financas-frontend/
 ### **Tabelas Principais**
 
 ```sql
--- Usuarios
-CREATE TABLE Usuarios (
-    Id INT PRIMARY KEY AUTO_INCREMENT,
-    Nome VARCHAR(100) NOT NULL,
-    Email VARCHAR(100) UNIQUE NOT NULL,
-    SenhaHash VARCHAR(255) NOT NULL,
-    DataCadastro DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+-- ============================================
+-- SCRIPT DE CRIAÇÃO DO BANCO DE DADOS
+-- Sistema de Finanças Pessoais Seguro
+-- SGBD: MySQL 8.0+
+-- ============================================
 
--- Categorias
+-- Criar e usar o banco de dados
+DROP DATABASE IF EXISTS FinancasDB;
+CREATE DATABASE FinancasDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE FinancasDB;
+
+-- ============================================
+-- TABELA: Usuarios
+-- Armazena dados de autenticação e perfil
+-- ============================================
+CREATE TABLE Usuarios (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Nome VARCHAR(100) NOT NULL,
+    Email VARCHAR(255) NOT NULL UNIQUE,
+    PasswordHash VARCHAR(255) NOT NULL, -- Senha criptografada (bcrypt/PBKDF2)
+    Salt VARCHAR(255) NOT NULL, -- Salt único por usuário
+    EmailConfirmado BOOLEAN DEFAULT FALSE,
+    TokenConfirmacaoEmail VARCHAR(255) NULL,
+    TokenResetSenha VARCHAR(255) NULL,
+    DataExpiracaoTokenReset DATETIME NULL,
+    TentativasLoginFalhadas INT DEFAULT 0,
+    ContaBloqueada BOOLEAN DEFAULT FALSE,
+    DataBloqueio DATETIME NULL,
+    DataCriacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    DataAtualizacao DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UltimoLogin DATETIME NULL,
+    INDEX idx_email (Email),
+    INDEX idx_token_reset (TokenResetSenha)
+) ENGINE=InnoDB;
+
+-- ============================================
+-- TABELA: Categorias
+-- Categorias de transações (Receita/Despesa)
+-- ============================================
 CREATE TABLE Categorias (
-    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Id INT AUTO_INCREMENT PRIMARY KEY,
     Nome VARCHAR(50) NOT NULL,
     Tipo ENUM('Receita', 'Despesa') NOT NULL,
-    Descricao VARCHAR(200),
+    Cor VARCHAR(7) DEFAULT '#3B82F6', -- Cor em hexadecimal para UI
+    Icone VARCHAR(50) DEFAULT 'tag', -- Nome do ícone (Lucide React)
     UsuarioId INT NOT NULL,
-    FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id)
-);
+    Ativo BOOLEAN DEFAULT TRUE,
+    DataCriacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id) ON DELETE CASCADE,
+    INDEX idx_usuario_tipo (UsuarioId, Tipo)
+) ENGINE=InnoDB;
 
--- Transacoes
+-- ============================================
+-- TABELA: Transacoes
+-- Registro de receitas e despesas
+-- ============================================
 CREATE TABLE Transacoes (
-    Id INT PRIMARY KEY AUTO_INCREMENT,
-    Descricao VARCHAR(200) NOT NULL,
-    Valor DECIMAL(10,2) NOT NULL,
-    Data DATE NOT NULL,
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Descricao VARCHAR(255) NOT NULL,
+    Valor DECIMAL(15, 2) NOT NULL,
     Tipo ENUM('Receita', 'Despesa') NOT NULL,
+    Data DATE NOT NULL,
     CategoriaId INT NOT NULL,
     UsuarioId INT NOT NULL,
+    Observacoes TEXT NULL,
+    Recorrente BOOLEAN DEFAULT FALSE,
+    TipoRecorrencia ENUM('Diaria', 'Semanal', 'Mensal', 'Anual') NULL,
     DataCriacao DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (CategoriaId) REFERENCES Categorias(Id),
-    FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id)
-);
+    DataAtualizacao DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (CategoriaId) REFERENCES Categorias(Id) ON DELETE RESTRICT,
+    FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id) ON DELETE CASCADE,
+    INDEX idx_usuario_data (UsuarioId, Data),
+    INDEX idx_usuario_tipo (UsuarioId, Tipo),
+    INDEX idx_categoria (CategoriaId)
+) ENGINE=InnoDB;
+
+-- ============================================
+-- TABELA: Anexos
+-- Armazena cupons fiscais e comprovantes
+-- ============================================
+CREATE TABLE Anexos (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    TransacaoId INT NOT NULL,
+    NomeArquivo VARCHAR(255) NOT NULL,
+    NomeArquivoOriginal VARCHAR(255) NOT NULL,
+    CaminhoArquivo VARCHAR(500) NOT NULL, -- Path relativo ao servidor
+    TipoMime VARCHAR(100) NOT NULL,
+    TamanhoBytes BIGINT NOT NULL,
+    HashArquivo VARCHAR(64) NOT NULL, -- SHA-256 do arquivo para integridade
+    DataUpload DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (TransacaoId) REFERENCES Transacoes(Id) ON DELETE CASCADE,
+    INDEX idx_transacao (TransacaoId)
+) ENGINE=InnoDB;
+
+-- ============================================
+-- TABELA: TokensAcesso
+-- Armazena refresh tokens JWT para autenticação
+-- ============================================
+CREATE TABLE TokensAcesso (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    UsuarioId INT NOT NULL,
+    RefreshToken VARCHAR(500) NOT NULL UNIQUE,
+    DataExpiracao DATETIME NOT NULL,
+    DataCriacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Revogado BOOLEAN DEFAULT FALSE,
+    DataRevogacao DATETIME NULL,
+    IpAddress VARCHAR(45) NULL, -- IPv4 ou IPv6
+    UserAgent VARCHAR(500) NULL,
+    FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id) ON DELETE CASCADE,
+    INDEX idx_usuario (UsuarioId),
+    INDEX idx_refresh_token (RefreshToken),
+    INDEX idx_expiracao (DataExpiracao)
+) ENGINE=InnoDB;
+
+-- ============================================
+-- TABELA: LogsAuditoria
+-- Registro de ações importantes para auditoria
+-- ============================================
+CREATE TABLE LogsAuditoria (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    UsuarioId INT NULL, -- NULL para ações anônimas (tentativas de login)
+    Acao VARCHAR(100) NOT NULL, -- Ex: 'LOGIN', 'LOGOUT', 'CRIAR_TRANSACAO', 'UPLOAD_ARQUIVO'
+    Entidade VARCHAR(50) NULL, -- Ex: 'Transacao', 'Usuario', 'Anexo'
+    EntidadeId INT NULL, -- ID da entidade afetada
+    Detalhes TEXT NULL, -- JSON com informações adicionais
+    IpAddress VARCHAR(45) NULL,
+    UserAgent VARCHAR(500) NULL,
+    DataAcao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id) ON DELETE SET NULL,
+    INDEX idx_usuario (UsuarioId),
+    INDEX idx_data (DataAcao),
+    INDEX idx_acao (Acao)
+) ENGINE=InnoDB;
+
+-- ============================================
+-- INSERIR DADOS INICIAIS (Opcional)
+-- ============================================
+
+-- Categorias padrão para novos usuários (você pode popular depois via aplicação)
+-- Exemplo: INSERT INTO Categorias (Nome, Tipo, Cor, Icone, UsuarioId) VALUES ('Salário', 'Receita', '#10B981', 'dollar-sign', 1);
+
+-- ============================================
+-- VIEWS ÚTEIS (Opcional)
+-- ============================================
+
+-- View: Resumo mensal por usuário
+CREATE VIEW vw_ResumoMensal AS
+SELECT 
+    UsuarioId,
+    YEAR(Data) AS Ano,
+    MONTH(Data) AS Mes,
+    SUM(CASE WHEN Tipo = 'Receita' THEN Valor ELSE 0 END) AS TotalReceitas,
+    SUM(CASE WHEN Tipo = 'Despesa' THEN Valor ELSE 0 END) AS TotalDespesas,
+    SUM(CASE WHEN Tipo = 'Receita' THEN Valor ELSE -Valor END) AS Saldo
+FROM Transacoes
+GROUP BY UsuarioId, YEAR(Data), MONTH(Data);
+
+-- View: Transações com detalhes de categoria
+CREATE VIEW vw_TransacoesDetalhadas AS
+SELECT 
+    t.Id,
+    t.Descricao,
+    t.Valor,
+    t.Tipo,
+    t.Data,
+    c.Nome AS Categoria,
+    c.Cor AS CorCategoria,
+    c.Icone AS IconeCategoria,
+    u.Nome AS Usuario,
+    t.Observacoes,
+    t.Recorrente,
+    t.DataCriacao
+FROM Transacoes t
+INNER JOIN Categorias c ON t.CategoriaId = c.Id
+INNER JOIN Usuarios u ON t.UsuarioId = u.Id;
+
+-- ============================================
+-- FIM DO SCRIPT
+-- ============================================
 ```
 
 ---
 
-## 🚀 Melhorias Futuras
-
-- [ ] Upload de cupons fiscais (anexos)
-- [ ] Gráficos de receitas vs despesas (Chart.js)
-- [ ] Exportação de relatórios (PDF/Excel)
-- [ ] Metas financeiras
-- [ ] Notificações de vencimento
-- [ ] Modo escuro (dark mode)
-- [ ] Aplicativo mobile (React Native)
-- [ ] Integração com bancos (Open Banking)
-- [ ] Backup automático
-- [ ] Auditoria completa (logs detalhados)
-
----
-
-## 🤝 Contribuindo
-
-Contribuições são bem-vindas! Siga os passos:
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
-4. Push para a branch (`git push origin feature/MinhaFeature`)
-5. Abra um Pull Request
-
----
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
-
-## 👥 Autores
-
-**Seu Nome** - Desenvolvedor Full Stack
-- GitHub: [@seu-usuario](https://github.com/seu-usuario)
-- LinkedIn: [Seu Nome](https://linkedin.com/in/seu-perfil)
-
-**Parceiro de Segurança** - Especialista em Segurança
-- Responsável por testes de vulnerabilidades e auditorias
-
----
-
-## 📞 Suporte
-
-Para dúvidas ou sugestões:
-- 📧 Email: seu-email@example.com
-- 💬 Issues: [GitHub Issues](https://github.com/seu-usuario/financas-pessoais/issues)
-
----
-
-## 🙏 Agradecimentos
-
-- Comunidade ASP.NET Core
-- Comunidade React
-- Claude AI (assistente no desenvolvimento)
-- Todos que contribuíram com feedback
-
----
 
 <div align="center">
 
 **Desenvolvido com ❤️ e ☕**
 
-⭐ Se este projeto te ajudou, considere dar uma estrela!
+Miguel A.
+Natanael B.
+Luiz F.
 
 </div>
