@@ -8,18 +8,6 @@ Sistema web completo para controle de finanças pessoais com foco em **seguranç
 
 ---
 
-## 📋 Índice
-
-- [Funcionalidades](#-funcionalidades)
-- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
-- [Arquitetura](#-arquitetura)
-- [Pré-requisitos](#-pré-requisitos)
-- [Instalação](#-instalação)
-- [Executando o Projeto](#-executando-o-projeto)
-- [Estrutura de Pastas](#-estrutura-de-pastas)
-
----
-
 ## 🛠️ Tecnologias Utilizadas
 
 ### **Backend**
