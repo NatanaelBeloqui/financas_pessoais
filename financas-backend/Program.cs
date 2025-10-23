@@ -55,6 +55,11 @@ builder.Services.AddControllers();
 
 // Adiciona Services
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<AuditoriaService>();
+
+// Necessário para obter HttpContext no service
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

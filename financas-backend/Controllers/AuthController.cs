@@ -14,6 +14,14 @@ namespace financas_backend.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
+        private readonly AuthService _authService;
+        private readonly AuditoriaService _auditoriaService;
+
+        public AuthController(AuthService authService, AuditoriaService auditoriaService)
+        {
+            _authService = authService;
+            _auditoriaService = auditoriaService;
+        }
         private readonly ApplicationDbContext _context;
         private readonly AuthService _authService;
         private readonly IConfiguration _configuration;
