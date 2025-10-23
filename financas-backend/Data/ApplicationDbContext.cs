@@ -15,6 +15,7 @@ namespace financas_backend.Data
         public DbSet<Transacao> Transacoes { get; set; }
         public DbSet<Anexo> Anexos { get; set; }
         public DbSet<TokenAcesso> TokensAcesso { get; set; }
+        public DbSet<LogAuditoria> LogsAuditoria { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
