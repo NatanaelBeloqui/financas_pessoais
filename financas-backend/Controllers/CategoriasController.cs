@@ -5,6 +5,7 @@ using System.Security.Claims;
 using financas_backend.Data;
 using financas_backend.DTOs;
 using financas_backend.Models;
+using financas_backend.Services;
 
 namespace financas_backend.Controllers
 {
@@ -14,10 +15,12 @@ namespace financas_backend.Controllers
     public class CategoriasController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly AuditoriaService _auditoriaService;
 
-        public CategoriasController(ApplicationDbContext context)
+        public CategoriasController(ApplicationDbContext context, AuditoriaService auditoriaService)
         {
             _context = context;
+            _auditoriaService = auditoriaService;
         }
 
         private int GetUsuarioId()
@@ -29,142 +32,235 @@ namespace financas_backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoriaResponseDTO>>> GetCategorias([FromQuery] string? tipo = null)
         {
-            var usuarioId = GetUsuarioId();
-
-            var query = _context.Categorias
-                .Where(c => c.UsuarioId == usuarioId && c.Ativo);
-
-            if (!string.IsNullOrEmpty(tipo))
+            try
             {
-                if (Enum.TryParse<TipoTransacao>(tipo, true, out var tipoEnum))
+                var usuarioId = GetUsuarioId();
+
+                var query = _context.Categorias
+                    .Where(c => c.UsuarioId == usuarioId && c.Ativo);
+
+                if (!string.IsNullOrEmpty(tipo))
                 {
-                    query = query.Where(c => c.Tipo == tipoEnum);
+                    if (Enum.TryParse<TipoTransacao>(tipo, true, out var tipoEnum))
+                    {
+                        query = query.Where(c => c.Tipo == tipoEnum);
+                    }
                 }
+
+                var categorias = await query
+                    .Select(c => new CategoriaResponseDTO
+                    {
+                        Id = c.Id,
+                        Nome = c.Nome,
+                        Tipo = c.Tipo,
+                        Cor = c.Cor,
+                        Icone = c.Icone,
+                        Ativo = c.Ativo,
+                        DataCriacao = c.DataCriacao
+                    })
+                    .ToListAsync();
+
+                return Ok(categorias);
             }
-
-            var categorias = await query
-                .Select(c => new CategoriaResponseDTO
-                {
-                    Id = c.Id,
-                    Nome = c.Nome,
-                    Tipo = c.Tipo,
-                    Cor = c.Cor,
-                    Icone = c.Icone,
-                    Ativo = c.Ativo,
-                    DataCriacao = c.DataCriacao
-                })
-                .ToListAsync();
-
-            return Ok(categorias);
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro no servidor" });
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoriaResponseDTO>> GetCategoria(int id)
         {
-            var usuarioId = GetUsuarioId();
-
-            var categoria = await _context.Categorias
-                .Where(c => c.Id == id && c.UsuarioId == usuarioId)
-                .Select(c => new CategoriaResponseDTO
-                {
-                    Id = c.Id,
-                    Nome = c.Nome,
-                    Tipo = c.Tipo,
-                    Cor = c.Cor,
-                    Icone = c.Icone,
-                    Ativo = c.Ativo,
-                    DataCriacao = c.DataCriacao
-                })
-                .FirstOrDefaultAsync();
-
-            if (categoria == null)
+            try
             {
-                return NotFound(new { message = "Categoria não encontrada" });
-            }
+                var usuarioId = GetUsuarioId();
 
-            return Ok(categoria);
+                var categoria = await _context.Categorias
+                    .Where(c => c.Id == id && c.UsuarioId == usuarioId)
+                    .Select(c => new CategoriaResponseDTO
+                    {
+                        Id = c.Id,
+                        Nome = c.Nome,
+                        Tipo = c.Tipo,
+                        Cor = c.Cor,
+                        Icone = c.Icone,
+                        Ativo = c.Ativo,
+                        DataCriacao = c.DataCriacao
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (categoria == null)
+                {
+                    return NotFound(new { message = "Categoria não encontrada" });
+                }
+
+                return Ok(categoria);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro no servidor" });
+            }
         }
 
         [HttpPost]
         public async Task<ActionResult<CategoriaResponseDTO>> CreateCategoria([FromBody] CategoriaCreateDTO dto)
         {
-            var usuarioId = GetUsuarioId();
-
-            var categoria = new Categoria
+            try
             {
-                Nome = dto.Nome,
-                Tipo = dto.Tipo,
-                Cor = dto.Cor,
-                Icone = dto.Icone,
-                UsuarioId = usuarioId
-            };
+                var usuarioId = GetUsuarioId();
 
-            _context.Categorias.Add(categoria);
-            await _context.SaveChangesAsync();
+                var categoria = new Categoria
+                {
+                    Nome = dto.Nome,
+                    Tipo = dto.Tipo,
+                    Cor = dto.Cor,
+                    Icone = dto.Icone,
+                    UsuarioId = usuarioId
+                };
 
-            var response = new CategoriaResponseDTO
+                _context.Categorias.Add(categoria);
+                await _context.SaveChangesAsync();
+
+                // ✅ REGISTRAR CRIAÇÃO
+                await _auditoriaService.RegistrarAcao(
+                    usuarioId,
+                    "CRIAR",
+                    "Categoria",
+                    categoria.Id,
+                    null,
+                    new { dto.Nome, dto.Tipo, dto.Cor, dto.Icone }
+                );
+
+                var response = new CategoriaResponseDTO
+                {
+                    Id = categoria.Id,
+                    Nome = categoria.Nome,
+                    Tipo = categoria.Tipo,
+                    Cor = categoria.Cor,
+                    Icone = categoria.Icone,
+                    Ativo = categoria.Ativo,
+                    DataCriacao = categoria.DataCriacao
+                };
+
+                return CreatedAtAction(nameof(GetCategoria), new { id = categoria.Id }, response);
+            }
+            catch (Exception ex)
             {
-                Id = categoria.Id,
-                Nome = categoria.Nome,
-                Tipo = categoria.Tipo,
-                Cor = categoria.Cor,
-                Icone = categoria.Icone,
-                Ativo = categoria.Ativo,
-                DataCriacao = categoria.DataCriacao
-            };
-
-            return CreatedAtAction(nameof(GetCategoria), new { id = categoria.Id }, response);
+                return StatusCode(500, new { message = "Erro no servidor" });
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategoria(int id, [FromBody] CategoriaUpdateDTO dto)
         {
-            var usuarioId = GetUsuarioId();
-
-            var categoria = await _context.Categorias
-                .FirstOrDefaultAsync(c => c.Id == id && c.UsuarioId == usuarioId);
-
-            if (categoria == null)
+            try
             {
-                return NotFound(new { message = "Categoria não encontrada" });
+                var usuarioId = GetUsuarioId();
+
+                var categoria = await _context.Categorias
+                    .FirstOrDefaultAsync(c => c.Id == id && c.UsuarioId == usuarioId);
+
+                if (categoria == null)
+                {
+                    return NotFound(new { message = "Categoria não encontrada" });
+                }
+
+                // ✅ SALVAR DADOS ANTERIORES
+                var dadosAntes = new
+                {
+                    categoria.Nome,
+                    categoria.Cor,
+                    categoria.Icone,
+                    categoria.Ativo
+                };
+
+                categoria.Nome = dto.Nome;
+                categoria.Cor = dto.Cor;
+                categoria.Icone = dto.Icone;
+                categoria.Ativo = dto.Ativo;
+
+                await _context.SaveChangesAsync();
+
+                // ✅ REGISTRAR EDIÇÃO
+                await _auditoriaService.RegistrarAcao(
+                    usuarioId,
+                    "EDITAR",
+                    "Categoria",
+                    id,
+                    dadosAntes,
+                    new { dto.Nome, dto.Cor, dto.Icone, dto.Ativo }
+                );
+
+                return NoContent();
             }
-
-            categoria.Nome = dto.Nome;
-            categoria.Cor = dto.Cor;
-            categoria.Icone = dto.Icone;
-            categoria.Ativo = dto.Ativo;
-
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro no servidor" });
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategoria(int id)
         {
-            var usuarioId = GetUsuarioId();
-
-            var categoria = await _context.Categorias
-                .FirstOrDefaultAsync(c => c.Id == id && c.UsuarioId == usuarioId);
-
-            if (categoria == null)
+            try
             {
-                return NotFound(new { message = "Categoria não encontrada" });
+                var usuarioId = GetUsuarioId();
+
+                var categoria = await _context.Categorias
+                    .FirstOrDefaultAsync(c => c.Id == id && c.UsuarioId == usuarioId);
+
+                if (categoria == null)
+                {
+                    return NotFound(new { message = "Categoria não encontrada" });
+                }
+
+                // Verifica se há transações usando essa categoria
+                var temTransacoes = await _context.Transacoes
+                    .AnyAsync(t => t.CategoriaId == id);
+
+                if (temTransacoes)
+                {
+                    // ✅ REGISTRAR TENTATIVA DE EXCLUSÃO NEGADA
+                    await _auditoriaService.RegistrarAcao(
+                        usuarioId,
+                        "DELETAR_NEGADO",
+                        "Categoria",
+                        id,
+                        new { categoria.Nome, Motivo = "Categoria possui transações associadas" },
+                        null
+                    );
+
+                    return BadRequest(new { message = "Não é possível excluir categoria com transações associadas" });
+                }
+
+                // ✅ SALVAR DADOS ANTES DE DELETAR
+                var dadosAntes = new
+                {
+                    categoria.Nome,
+                    categoria.Tipo,
+                    categoria.Cor,
+                    categoria.Icone
+                };
+
+                _context.Categorias.Remove(categoria);
+                await _context.SaveChangesAsync();
+
+                // ✅ REGISTRAR EXCLUSÃO
+                await _auditoriaService.RegistrarAcao(
+                    usuarioId,
+                    "DELETAR",
+                    "Categoria",
+                    id,
+                    dadosAntes,
+                    null
+                );
+
+                return NoContent();
             }
-
-            // Verifica se há transações usando essa categoria
-            var temTransacoes = await _context.Transacoes
-                .AnyAsync(t => t.CategoriaId == id);
-
-            if (temTransacoes)
+            catch (Exception ex)
             {
-                return BadRequest(new { message = "Não é possível excluir categoria com transações associadas" });
+                return StatusCode(500, new { message = "Erro no servidor" });
             }
-
-            _context.Categorias.Remove(categoria);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
     }
 }

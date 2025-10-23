@@ -55,7 +55,6 @@ builder.Services.AddControllers();
 
 // Adiciona Services
 builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<AuditoriaService>();
 
 // Necessário para obter HttpContext no service
@@ -64,11 +63,19 @@ builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+
+// Rate Limiting - Proteção contra força bruta
 app.UseMiddleware<financas_backend.Middlewares.RateLimitingMiddleware>();
+
+// IMPORTANTE: A ordem importa!
 app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Servir arquivos estáticos (uploads)
 app.UseStaticFiles();
+
 app.MapControllers();
 
 app.Run();
