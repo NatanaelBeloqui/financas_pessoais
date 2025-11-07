@@ -402,4 +402,17 @@ FodyWeavers.xsd
 # Visual Studio
 .vs/
 
+# Arquivos de configuração sensíveis
+appsettings.json
+appsettings.*.json
+!appsettings.Development.json
+
+# User Secrets
+**/appsettings.local.json
+
+# Variáveis de ambiente
+.env
+.env.local
+.env.*.local
+
 # End of https://www.toptal.com/developers/gitignore/api/csharp

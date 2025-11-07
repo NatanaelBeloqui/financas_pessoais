@@ -113,6 +113,24 @@ npm install
 ```
 ---
 
+### **⚙️ Configurar Variáveis de Ambiente**
+
+O projeto usa **User Secrets** do .NET para proteger informações sensíveis.
+```bash
+cd financas-backend
+
+# Inicializar User Secrets (se ainda não fez)
+dotnet user-secrets init
+
+# Configurar Connection String (substitua com suas credenciais)
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost;Port=3306;Database=FinancasDB;User=root;Password=SUA_SENHA;"
+
+# Configurar JWT Secret Key (gere uma chave forte)
+dotnet user-secrets set "JwtSettings:SecretKey" "SUA_CHAVE_SECRETA_FORTE_AQUI_32_CHARS_MIN"
+```
+
+> **💡 Dica:** Use um gerador de senhas forte para a SecretKey, como [passwordsgenerator.net](https://passwordsgenerator.net/)
+
 ## ▶️ Executando o Projeto
 
 ### **1. Iniciar o MySQL (XAMPP)**
