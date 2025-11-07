@@ -427,3 +427,25 @@ Natanael B.
 Luiz F.
 
 </div>
+
+### 🔒 **Segurança Implementada**
+
+Este projeto implementa as seguintes práticas de segurança:
+
+#### **Headers de Segurança**
+- ✅ **Content-Security-Policy (CSP)** - Proteção contra XSS
+- ✅ **X-Frame-Options** - Proteção contra Clickjacking  
+- ✅ **X-Content-Type-Options** - Proteção contra MIME sniffing
+- ✅ **X-XSS-Protection** - Proteção adicional XSS
+- ✅ **Referrer-Policy** - Controle de informações de referência
+- ✅ **Permissions-Policy** - Restrição de APIs do navegador
+- ✅ **HSTS** - (Habilitado apenas em produção com HTTPS)
+
+#### **Credenciais**
+- ✅ **User Secrets** do .NET para desenvolvimento
+- ✅ Nenhuma credencial hardcoded no código
+- ✅ `.gitignore` configurado para proteger arquivos sensíveis
+
+#### **Frontend**
+- ✅ Sem uso de `alert()`, `confirm()` ou `prompt()`
+- ✅ Componentes React seguros para feedback ao usuário
