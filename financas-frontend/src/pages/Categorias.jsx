@@ -1,3 +1,4 @@
+// Categorias.jsx
 import React, { useState, useEffect } from 'react';
 import categoriaService from '../services/categoriaService';
 

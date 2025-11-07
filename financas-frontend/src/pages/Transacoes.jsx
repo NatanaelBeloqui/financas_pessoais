@@ -1,3 +1,5 @@
+// Transacoes.jsx
+
 import React, { useState, useEffect } from 'react';
 import transacaoService from '../services/transacaoService';
 import categoriaService from '../services/categoriaService';
